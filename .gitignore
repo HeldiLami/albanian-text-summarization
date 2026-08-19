@@ -1,0 +1,29 @@
+# Python cache and local environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+
+# Local tooling and operating-system files
+.vscode/
+.idea/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store
+Thumbs.db
+
+# Generated dataset and scraper inputs
+data/dataset_final.csv
+data/raw_sitemaps/
+data/urls/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
