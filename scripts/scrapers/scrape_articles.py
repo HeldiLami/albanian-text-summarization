@@ -3,7 +3,6 @@ import csv
 from pathlib import Path
 import re
 import time
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -13,8 +12,8 @@ DATA_DIR = ROOT / "data"
 OUTPUT_FILE = DATA_DIR / "dataset_final.csv"
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 SOURCES = {
-    "Gazeta Shqiptare": ("gazetashqiptare_all_article_urls.txt", r"(entry-content|td-post-content|post-content)"),
-    "Panorama": ("panorama_urls.txt", r"(entry-content|post-content|article-body|single-content)"),
+   # "Gazeta Shqiptare": ("gazetashqiptare_all_article_urls.txt", r"(entry-content|td-post-content|post-content)"),
+  #  "Panorama": ("panorama_urls.txt", r"(entry-content|post-content|article-body|single-content)"),
     "Telegrafi": ("telegrafi_news_article_urls.txt", r"(article-body|single-content|post-content)"),
 }
 
@@ -37,10 +36,13 @@ def extract_article(session, url, content_pattern):
             return None, None
         title = title_node.get("content", "") if title_node.name == "meta" else title_node.get_text(" ", strip=True)
         title = re.sub(r"\s*[-|]\s*(Panorama|Telegrafi|Gazeta Shqiptare).*", "", title, flags=re.I).strip()
-        clean_soup(soup)
-        content = soup.find("div", class_=re.compile(content_pattern, re.I)) or soup.find("article")
+        content = soup.find("div", class_=re.compile(content_pattern, re.I))
+        if not content:
+            content = soup.find("article")
         if not content:
             return None, None
+        for tag in content(["script", "style", "iframe", "form"]):
+            tag.decompose()
         paragraphs = []
         for paragraph in content.find_all("p"):
             text = re.sub(r"\s+", " ", paragraph.get_text(" ", strip=True)).strip()
