@@ -1,31 +1,31 @@
-# Diploma Article Dataset
+# Albanian Text Summarization
 
-Ky projekt mbledh artikuj nga Panorama, Gazeta Shqiptare dhe Telegrafi dhe i ruan te `data/dataset_final.csv`.
+This project collects articles from Panorama, Gazeta Shqiptare, and Telegrafi and stores them in `data/dataset_final.csv`.
 
 ## Pipeline
 
-Nga rrënja e projektit:
+From the project root:
 
 ```powershell
 python scripts/run_pipeline.py --max-per-site 3500
 ```
 
-Hapat janë:
+The steps are:
 
-1. `scripts/download_sitemaps.py` shkarkon sitemap-et te `data/raw_sitemaps/`.
-2. `scripts/build_article_urls.py` krijon lista të pastra URL-sh te `data/urls/`.
-3. `scripts/scrape_articles.py` shkarkon artikujt dhe vazhdon nga URL-të që mungojnë.
+1. `scripts/download_sitemaps.py` downloads the sitemaps to `data/raw_sitemaps/`.
+2. `scripts/build_article_urls.py` creates clean URL lists in `data/urls/`.
+3. `scripts/scrape_articles.py` downloads the articles and continues from any missing URLs.
 
-Për ta krijuar dataset-in nga e para përdor:
+To create the dataset from scratch, use:
 
 ```powershell
 python scripts/run_pipeline.py --reset --max-per-site 3500
 ```
 
-Për një provë të vogël:
+For a small test run:
 
 ```powershell
-python scripts/03_scrape_articles.py --max-per-site 1
+python scripts/scrape_articles.py --max-per-site 1
 ```
 
-Diagnostika gjendet te `scripts/diagnostics/`.
+Diagnostics can be found in `scripts/diagnostics/`.

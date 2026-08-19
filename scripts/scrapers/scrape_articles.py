@@ -8,7 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = ROOT / "data"
 OUTPUT_FILE = DATA_DIR / "dataset_final.csv"
 HEADERS = {"User-Agent": "Mozilla/5.0"}

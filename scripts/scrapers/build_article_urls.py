@@ -7,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 RAW_DIR = ROOT / "data" / "raw_sitemaps"
 URL_DIR = ROOT / "data" / "urls"
 HEADERS = {"User-Agent": "Mozilla/5.0"}
@@ -84,34 +84,35 @@ def collect_gazetashqiptare():
     write_urls("gazetashqiptare_all_article_urls.txt", unique_articles(article_urls))
 
 
-def collect_telegrafi():
-    sitemap_path = RAW_DIR / "telegrafi_news.xml"
-    sitemap_urls = local_locs(sitemap_path)
-    if not sitemap_urls:
-        sitemap_urls = [
-            url for url in local_locs(RAW_DIR / "telegrafi_sitemap.xml")
-            if "news" in url.lower()
-        ]
-    if not sitemap_urls:
-        fallback_path = URL_DIR / "telegrafi_news_sub.txt"
-        if fallback_path.exists():
-            sitemap_urls = [
-                line.strip() for line in fallback_path.read_text(encoding="utf-8").splitlines()
-                if line.strip()
-            ]
-    article_urls = []
-    for sitemap_url in sitemap_urls:
+def collect_telegrafi(target_urls=7000):
+    sitemap_urls = local_locs(RAW_DIR / "telegrafi_sitemap.xml")
+    
+    sitemap_urls = [u for u in sitemap_urls if "post" in u or "article" in u or "sitemap" in u]
+    
+    print(f"---> U gjetën {len(sitemap_urls)} sub-sitemaps për Telegrafin.")
+    
+    import random
+    random.shuffle(sitemap_urls)
+
+    valid_article_urls = set()
+    for index, sitemap_url in enumerate(sitemap_urls, start=1):
+        if len(valid_article_urls) >= target_urls:
+            break
         try:
-            article_urls.extend(remote_locs(sitemap_url))
+            urls = remote_locs(sitemap_url)
+            clean_urls = unique_articles(urls)
+            valid_article_urls.update(clean_urls)
+            
+            print(f"[Telegrafi {index}/{len(sitemap_urls)}] Kemi mbledhur {len(valid_article_urls)} URL të vlefshme...")
         except requests.RequestException as error:
             print(f"[ERROR] {sitemap_url}: {error}")
-    write_urls("telegrafi_news_article_urls.txt", unique_articles(article_urls))
-
+            
+    write_urls("telegrafi_news_article_urls.txt", list(valid_article_urls))
 
 def main():
     panorama_urls = unique_articles(local_locs(RAW_DIR / "panorama_sitemap.xml"))
     write_urls("panorama_urls.txt", panorama_urls)
-    collect_gazetashqiptare()
+    #collect_gazetashqiptare()
     collect_telegrafi()
 
 

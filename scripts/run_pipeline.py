@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def run_script(filename, *arguments):
-    subprocess.run([sys.executable, str(ROOT / "scripts" / filename), *arguments], check=True)
+    subprocess.run([sys.executable, str(ROOT / "scripts" / "scrapers" / filename), *arguments], check=True)
 
 
 def main():
