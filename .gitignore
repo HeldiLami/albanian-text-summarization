@@ -22,6 +22,7 @@ Thumbs.db
 data/dataset_final.csv
 data/raw_sitemaps/
 data/urls/
+data/processed/
 
 # Logs and temporary files
 *.log
