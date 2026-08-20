@@ -96,7 +96,7 @@ Trained on an Albanian news dataset split into standard training (`train`), vali
 * **Tokenization:** `google/mt5-small` SentencePiece tokenizer
 
 #### Training Hyperparameters
-* **Adapter Configuration:** LoRA ($r=16$, $\alpha=32$, `lora_dropout=0.1`)
+* **Adapter Configuration:** LoRA (r=16, alpha=32, `lora_dropout=0.1`)
 * **Target Modules:** Query (`q`) and Value (`v`) projections
 * **Epochs:** 5
 * **Learning Rate:** 1e-3
@@ -109,11 +109,10 @@ Trained on an Albanian news dataset split into standard training (`train`), vali
 ### Results (Test Set Performance)
 Evaluation metrics calculated against reference summaries across the test set:
 
-
 ## Results
 
 | Model / Baseline | ROUGE-1 (%) | ROUGE-2 (%) | ROUGE-L (%) | ROUGE-Lsum (%) |
-|---|---:|---:|---:|---:|
+| --- | --- | --- | --- | --- |
 | **Lead-8 Baseline** | 18.35 | 5.79 | 15.99 | - |
 | **Lead-12 Baseline** | 21.87 | 7.04 | 18.21 | - |
 | **Lead-20 Baseline** | 23.93 | 8.07 | 18.86 | - |
