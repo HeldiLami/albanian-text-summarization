@@ -1,30 +1,32 @@
-# Python cache and local environments
+# Models & Large Weights 
+models/mt5-shqip-LoRA/tokenizer.json
+*.safetensors
+*.bin
+*.pth
+*.onnx
+
+# Datasets & Predictions (të dhënat CSV, JSON, etj.)
+data/
+*.csv
+*.jsonl
+
+# Environments & Virtual Environments
+venv/
+.venv/
+env/
+
+# Python Cache & Artifacts
 __pycache__/
 *.py[cod]
-*$py.class
-.venv/
-venv/
-env/
-.env
-.env.*
-!.env.example
+.pytest_cache/
+.ipynb_checkpoints/
 
-# Local tooling and operating-system files
+# IDE & OS Specific
 .vscode/
 .idea/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
 .DS_Store
-Thumbs.db
 
-# Generated dataset and scraper inputs
-data/dataset_final.csv
-data/raw_sitemaps/
-data/urls/
-data/processed/
 
-# Logs and temporary files
-*.log
-*.tmp
-*.bak
+# Documentation
+
+documentation.md
