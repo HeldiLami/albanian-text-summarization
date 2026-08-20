@@ -2,19 +2,20 @@
 base_model: google/mt5-small
 library_name: peft
 tags:
-- base_model:adapter:google/mt5-small
-- lora
-- transformers
-- text-summarization
-- albanian
-- nlp
+  - base_model:adapter:google/mt5-small
+  - lora
+  - transformers
+  - text-summarization
+  - albanian
+  - nlp
 language:
-- sq
+  - sq
 license: apache-2.0
 metrics:
-- rouge
+  - rouge
 pipeline_tag: text2text-generation
 ---
+
 # mT5-small for Albanian Automatic Text Summarization (LoRA)
 
 This repository contains the fine-tuned LoRA (Low-Rank Adaptation) adapter weights for **`google/mt5-small`**, optimized specifically for abstractive automatic text summarization in the Albanian language.
@@ -54,6 +55,7 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 MODEL_NAME = "google/mt5-small"
 LORA_PATH = "models/mt5-shqip-LoRA"
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Load tokenizer and base model
 tokenizer = AutoTokenizer.from_pretrained(LORA_PATH)
@@ -62,11 +64,11 @@ base_model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME)
 # Load PEFT adapters and merge weights
 model = PeftModel.from_pretrained(base_model, LORA_PATH)
 model = model.merge_and_unload()
-model.eval().to("cuda")
+model.eval().to(DEVICE)
 
 # Run inference
 article_text = "Insert text in Albanian..."
-inputs = tokenizer(article_text, max_length=640, truncation=True, return_tensors="pt").to("cuda")
+inputs = tokenizer(article_text, max_length=640, truncation=True, return_tensors="pt").to(DEVICE)
 
 with torch.no_grad():
     outputs = model.generate(
@@ -81,48 +83,51 @@ with torch.no_grad():
 
 summary = tokenizer.decode(outputs[0], skip_special_tokens=True)
 print("Summary:", summary)
-
+```
 
 ## Training Details
 
 ### Training Data
+
 Trained on an Albanian news dataset split into standard training (`train`), validation (`val`), and testing (`test`) subsets.
 
 ### Training Procedure
 
 #### Preprocessing
-* **Max Source Length:** 640 tokens
-* **Max Target Length:** 96 tokens
-* **Tokenization:** `google/mt5-small` SentencePiece tokenizer
+
+- **Max Source Length:** 640 tokens
+- **Max Target Length:** 96 tokens
+- **Tokenization:** `google/mt5-small` SentencePiece tokenizer
 
 #### Training Hyperparameters
-* **Adapter Configuration:** LoRA (r=16, alpha=32, `lora_dropout=0.1`)
-* **Target Modules:** Query (`q`) and Value (`v`) projections
-* **Epochs:** 5
-* **Learning Rate:** 1e-3
-* **Batch Size:** 8 per device
-* **Optimizer / Precision:** Weight decay = 0.01, `bf16` mixed precision
-* **Best Model Selection:** Metric-based (ROUGE-L)
+
+- **Adapter Configuration:** LoRA (r=16, alpha=32, `lora_dropout=0.1`)
+- **Target Modules:** Query (`q`) and Value (`v`) projections
+- **Epochs:** 5
+- **Learning Rate:** 1e-3
+- **Batch Size:** 8 per device
+- **Optimizer / Precision:** Weight decay = 0.01, `bf16` mixed precision
+- **Best Model Selection:** Metric-based (ROUGE-L)
 
 ## Evaluation
 
 ### Results (Test Set Performance)
+
 Evaluation metrics calculated against reference summaries across the test set:
 
 ## Results
 
-| Model / Baseline | ROUGE-1 (%) | ROUGE-2 (%) | ROUGE-L (%) | ROUGE-Lsum (%) |
-| --- | --- | --- | --- | --- |
-| **Lead-8 Baseline** | 18.35 | 5.79 | 15.99 | - |
-| **Lead-12 Baseline** | 21.87 | 7.04 | 18.21 | - |
-| **Lead-20 Baseline** | 23.93 | 8.07 | 18.86 | - |
-| **mT5 + LoRA (This Model)** | **25.47** | **9.27** | **21.00** | **21.04** |
-
+| Model / Baseline            | ROUGE-1 (%) | ROUGE-2 (%) | ROUGE-L (%) |
+| --------------------------- | ----------- | ----------- | ----------- |
+| **Lead-8 Baseline**         | 18.35       | 5.79        | 15.99       |
+| **Lead-12 Baseline**        | 21.87       | 7.04        | 18.21       |
+| **Lead-20 Baseline**        | 23.93       | 8.07        | 18.86       |
+| **mT5 + LoRA (This Model)** | **25.47**   | **9.27**    | **21.00**   |
 
 ## Technical Specifications
 
 ### Hardware & Infrastructure
-* **Platform:** Kaggle Notebooks
-* **GPU:** NVIDIA Tesla T4 / P100 (16GB VRAM)
-* **Framework versions:** `transformers`, `peft 0.19.1`, `torchao 0.18.0`
-```
+
+- **Platform:** Kaggle Notebooks
+- **GPU:** NVIDIA Tesla T4 / P100 (16GB VRAM)
+- **Framework versions:** `transformers`, `peft 0.19.1`, `torchao 0.18.0`
