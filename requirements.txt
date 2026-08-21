@@ -1,0 +1,15 @@
+# Core data and scraping
+beautifulsoup4
+pandas
+requests
+scikit-learn
+
+# Training and inference
+accelerate
+datasets
+evaluate
+peft
+sentencepiece
+torch
+transformers
+tqdm
