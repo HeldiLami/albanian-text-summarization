@@ -1,12 +1,9 @@
-# Models & Large Weights 
-models/mt5-shqip-LoRA/tokenizer.json
+# Models & Large Weights
 *.safetensors
 *.bin
 *.pth
 *.onnx
 !models/mt5-shqip-LoRA/adapter_model.safetensors
-!models/mt5-shqip-LoRA/training_args.bin
-!models/mt5-shqip-LoRA/tokenizer.json
 
 # Datasets & Predictions (të dhënat CSV, JSON, etj.)
 data/
