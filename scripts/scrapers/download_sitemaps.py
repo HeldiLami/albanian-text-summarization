@@ -3,14 +3,13 @@ from pathlib import Path
 import requests
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DIR = ROOT / "data" / "raw_sitemaps"
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 SITEMAPS = {
     "panorama_sitemap.xml": "https://www.panorama.com.al/sitemap.xml",
     "gazetashqiptare_index.xml": "https://gazetashqiptare.al/sitemap_index.xml",
     "telegrafi_sitemap.xml": "https://telegrafi.com/sitemap.xml",
-    "telegrafi_news.xml": "https://telegrafi.com/sitemap_news.xml",
 }
 
 

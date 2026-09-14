@@ -45,9 +45,9 @@ Struktura finale, e konsoliduar pas disa iterimesh eksperimentale:
 scripts/
 ├── run_pipeline.py              # orkestrues (thërret 01→02→03 me subprocess)
 └── scrapers/
-    ├── 01_download_sitemaps.py  # shkarkon sitemap XML lokalisht
-    ├── 02_build_article_urls.py # nxjerr URL artikujsh (me retry logic, checkpoint çdo 10/20 sitemaps)
-    └── 03_scrape_articles.py    # HTML → CSV (argparse: --max-per-site, --reset)
+    ├── download_sitemaps.py      # shkarkon sitemap XML lokalisht
+    ├── build_article_urls.py     # nxjerr URL artikujsh (me retry dhe checkpoint)
+    └── scrape_articles.py        # HTML → CSV (argparse: --max-per-site, --reset)
 ```
 
 **Karakteristika teknike të rëndësishme**:

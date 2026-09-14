@@ -1,8 +1,12 @@
+from pathlib import Path
+
 import torch
 from peft import PeftModel
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
-adapter_path = "models/mt5-shqip-LoRA"
+
+ROOT = Path(__file__).resolve().parents[1]
+adapter_path = ROOT / "models" / "mt5-shqip-LoRA"
 base_model_name = "google/mt5-small"
 
 device = "cuda" if torch.cuda.is_available() else "cpu"

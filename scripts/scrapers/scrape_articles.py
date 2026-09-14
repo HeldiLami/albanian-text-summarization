@@ -12,17 +12,10 @@ DATA_DIR = ROOT / "data"
 OUTPUT_FILE = DATA_DIR / "dataset_final.csv"
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 SOURCES = {
-   # "Gazeta Shqiptare": ("gazetashqiptare_all_article_urls.txt", r"(entry-content|td-post-content|post-content)"),
-  #  "Panorama": ("panorama_urls.txt", r"(entry-content|post-content|article-body|single-content)"),
+    "Gazeta Shqiptare": ("gazetashqiptare_all_article_urls.txt", r"(entry-content|td-post-content|post-content)"),
+    "Panorama": ("panorama_urls.txt", r"(entry-content|post-content|article-body|single-content)"),
     "Telegrafi": ("telegrafi_news_article_urls.txt", r"(article-body|single-content|post-content)"),
 }
-
-
-def clean_soup(soup):
-    for tag in soup(["header", "footer", "nav", "aside", "script", "style", "form", "iframe"]):
-        tag.decompose()
-    for element in soup.find_all(class_=re.compile(r"(sidebar|comment|related|widget|share|advert)", re.I)):
-        element.decompose()
 
 
 def extract_article(session, url, content_pattern):
@@ -80,7 +73,9 @@ def scrape(max_per_site, reset):
                 urls = [line.strip() for line in url_file.read_text(encoding="utf-8").splitlines() if line.strip()]
                 saved = 0
                 for url in urls:
-                    if saved >= max_per_site or url in existing_urls:
+                    if saved >= max_per_site:
+                        break
+                    if url in existing_urls:
                         continue
                     title, content = extract_article(session, url, content_pattern)
                     if title and content:

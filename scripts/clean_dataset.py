@@ -1,9 +1,11 @@
+from html import unescape
 import re
 from pathlib import Path
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-# Since the file is located directly in the "scripts/" folder, we use parents[1]
+
 ROOT = Path(__file__).resolve().parents[1]
 INPUT_FILE = ROOT / "data" / "dataset_final.csv"
 OUTPUT_DIR = ROOT / "data" / "processed"
@@ -14,8 +16,8 @@ def clean_raw_text(text):
     if not isinstance(text, str):
         return ""
 
-    # Remove remaining HTML entities (e.g., &nbsp;, &amp;)
-    text = re.sub(r"&[a-zA-Z]+;", " ", text)
+    # Convert HTML entities such as &amp; and &quot; to normal characters.
+    text = unescape(text).replace("\xa0", " ")
 
     # Remove standard noisy portal phrases/boilerplate text
     noise_patterns = [
@@ -37,9 +39,9 @@ def clean_raw_text(text):
 def get_source(url):
     if "gazetashqiptare" in url:
         return "gazetashqiptare"
-    elif "panorama" in url:
+    if "panorama" in url:
         return "panorama"
-    elif "telegrafi" in url:
+    if "telegrafi" in url:
         return "telegrafi"
     return "unknown"
 
@@ -51,6 +53,11 @@ def main():
 
     print("---> Reading initial dataset...")
     df = pd.read_csv(INPUT_FILE)
+    required_columns = {"target_summary", "source_text", "url"}
+    missing_columns = required_columns - set(df.columns)
+    if missing_columns:
+        print(f"[ERROR] Missing columns: {', '.join(sorted(missing_columns))}")
+        return
     print(f"Initial rows: {len(df)}")
 
     print("---> Cleaning text contents (this will take a few seconds)...")
@@ -63,30 +70,24 @@ def main():
     df = df.drop_duplicates(subset=["target_summary"])
     print(f"Rows after removing duplicates: {len(df)}")
 
-
     print("---> Filtering by word length...")
     df["summary_len"] = df["target_summary"].apply(lambda x: len(x.split()))
     df["source_len"] = df["source_text"].apply(lambda x: len(x.split()))
 
     # Keep articles where source_text >= 40 words and target_summary >= 3 words
     df_clean = df[
-        (df["source_len"] >= 40) & 
-        (df["source_len"] <= UPPER_BOUND) & 
-        (df["summary_len"] >= 3)
-    ].copy()    
+        (df["source_len"] >= 40)
+        & (df["source_len"] <= UPPER_BOUND)
+        & (df["summary_len"] >= 3)
+    ].copy()
     # Drop auxiliary length calculation columns
     df_clean = df_clean.drop(columns=["summary_len", "source_len"])
-    print(f"Valid rows for training: {len(df_clean)}")
-
-    # Shto kolonen 'source' per stratifikim
+    # Add the source column temporarily for a stratified split.
     df_clean["source"] = df_clean["url"].apply(get_source)
     print("\nShperndarja sipas burimit:")
     print(df_clean["source"].value_counts())
     
     print(f"Valid rows for training: {len(df_clean)}")
-
-    print("---> Splitting dataset (80% Train, 10% Val, 10% Test)...")
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print("---> Splitting dataset (80% Train, 10% Val, 10% Test)...")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

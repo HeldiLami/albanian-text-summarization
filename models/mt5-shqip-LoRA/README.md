@@ -58,7 +58,7 @@ LORA_PATH = "models/mt5-shqip-LoRA"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Load tokenizer and base model
-tokenizer = AutoTokenizer.from_pretrained(LORA_PATH)
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 base_model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME)
 
 # Load PEFT adapters and merge weights

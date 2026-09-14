@@ -71,7 +71,7 @@ For a minimal connectivity/scraping check:
 python scripts/scrapers/scrape_articles.py --max-per-site 1
 ```
 
-The checked-in final dataset was collected from all three sources. The current scraper configuration is intentionally limited to Telegrafi in `scripts/scrapers/scrape_articles.py`; enable the other source entries there before running a new multi-source collection.
+The final dataset was collected from Gazeta Shqiptare, Panorama, and Telegrafi. The pipeline is configured to collect from all three sources.
 
 ## Preprocessing
 
@@ -96,7 +96,7 @@ base_name = "google/mt5-small"
 adapter_path = "models/mt5-shqip-LoRA"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-tokenizer = AutoTokenizer.from_pretrained(adapter_path)
+tokenizer = AutoTokenizer.from_pretrained(base_name)
 base_model = AutoModelForSeq2SeqLM.from_pretrained(base_name)
 model = PeftModel.from_pretrained(base_model, adapter_path).merge_and_unload()
 model.to(device).eval()
@@ -121,7 +121,7 @@ print(tokenizer.decode(output[0], skip_special_tokens=True))
 ## Training and experiments
 
 - `scripts/modeltrain.ipynb` contains the tokenization, LoRA fine-tuning, evaluation, and baseline comparison workflow.
-- `scripts/experiments/` contains dataset statistics, source-distribution checks, and token-length experiments.
+- `scripts/experiments/` contains dataset statistics and token-length experiments.
 - `scripts/diagnostics/` contains connectivity and sitemap checks.
 
 The notebook was developed on Kaggle with internet and GPU access. It can also run from the repository root after the dependencies, processed CSV files, and model adapter have been made available locally.
@@ -135,7 +135,7 @@ data/
 	test_predictions_with_summaries.csv
 	raw_sitemaps/                     # Downloaded sitemap files
 	urls/                             # Extracted article URL lists
-models/mt5-shqip-LoRA/              # Fine-tuned LoRA adapter and tokenizer
+models/mt5-shqip-LoRA/              # Fine-tuned LoRA adapter
 scripts/
 	clean_dataset.py                  # Cleaning and stratified splitting
 	run_pipeline.py                   # Collection orchestrator
@@ -148,7 +148,7 @@ documentation.md                   # Detailed project log and methodology
 
 ## Limitations
 
-This is a single-source-news summarization model trained on portal articles and lead-style reference summaries. ROUGE does not fully measure factuality, grammar, or editorial quality, so generated summaries should also be reviewed manually. The model is not intended for translation, multi-document summarization, or answering questions outside the supplied article context.
+This is a news summarization model trained on articles from three Albanian-language portals and lead-style reference summaries. ROUGE does not fully measure factuality, grammar, or editorial quality, so generated summaries should also be reviewed manually. The model is not intended for translation, multi-document summarization, or answering questions outside the supplied article context.
 
 ## License
 

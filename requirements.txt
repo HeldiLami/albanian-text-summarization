@@ -9,6 +9,7 @@ accelerate
 datasets
 evaluate
 peft
+rouge-score
 sentencepiece
 torch
 transformers

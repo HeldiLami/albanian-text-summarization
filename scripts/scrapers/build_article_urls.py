@@ -1,5 +1,6 @@
 from pathlib import Path
 from urllib.parse import urlparse
+import random
 import re
 import time
 
@@ -17,6 +18,7 @@ SESSION.headers.update(HEADERS)
 
 def local_locs(path):
     if not path.exists():
+        print(f"[SKIP] Mungon {path}")
         return []
     soup = BeautifulSoup(path.read_bytes(), "xml")
     return [tag.get_text(strip=True) for tag in soup.find_all("loc")]
@@ -86,33 +88,33 @@ def collect_gazetashqiptare():
 
 def collect_telegrafi(target_urls=7000):
     sitemap_urls = local_locs(RAW_DIR / "telegrafi_sitemap.xml")
-    
-    sitemap_urls = [u for u in sitemap_urls if "post" in u or "article" in u or "sitemap" in u]
-    
     print(f"---> U gjetën {len(sitemap_urls)} sub-sitemaps për Telegrafin.")
-    
-    import random
-    random.shuffle(sitemap_urls)
 
-    valid_article_urls = set()
+    random.Random(42).shuffle(sitemap_urls)
+
+    article_urls = []
+    seen = set()
     for index, sitemap_url in enumerate(sitemap_urls, start=1):
-        if len(valid_article_urls) >= target_urls:
+        if len(article_urls) >= target_urls:
             break
         try:
-            urls = remote_locs(sitemap_url)
-            clean_urls = unique_articles(urls)
-            valid_article_urls.update(clean_urls)
-            
-            print(f"[Telegrafi {index}/{len(sitemap_urls)}] Kemi mbledhur {len(valid_article_urls)} URL të vlefshme...")
+            for url in unique_articles(remote_locs(sitemap_url)):
+                if url not in seen:
+                    seen.add(url)
+                    article_urls.append(url)
+                if len(article_urls) >= target_urls:
+                    break
+            print(f"[Telegrafi {index}/{len(sitemap_urls)}] Kemi mbledhur {len(article_urls)} URL të vlefshme...")
         except requests.RequestException as error:
             print(f"[ERROR] {sitemap_url}: {error}")
-            
-    write_urls("telegrafi_news_article_urls.txt", list(valid_article_urls))
+
+    write_urls("telegrafi_news_article_urls.txt", article_urls)
+
 
 def main():
     panorama_urls = unique_articles(local_locs(RAW_DIR / "panorama_sitemap.xml"))
     write_urls("panorama_urls.txt", panorama_urls)
-    #collect_gazetashqiptare()
+    collect_gazetashqiptare()
     collect_telegrafi()
 
 
