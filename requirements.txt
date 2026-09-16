@@ -4,6 +4,9 @@ pandas
 requests
 scikit-learn
 
+# Dataset visualizations
+matplotlib>=3.9
+
 # Training and inference
 accelerate
 datasets
